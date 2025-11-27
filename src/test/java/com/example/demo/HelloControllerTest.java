@@ -1,14 +1,11 @@
 package com.example.demo;
 
-import com.example.demo.sayhello.GreetingRepository;
-import com.example.demo.sayhello.GreetingRequest;
-import com.example.demo.sayhello.SayHelloService;
+import com.example.demo.sayhello.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -20,16 +17,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
+@WebMvcTest(HelloController.class)             // 👈 solo capa web
+@Import(SayHelloServiceDefault.class)
 class HelloControllerTest
 {
     @Autowired
     private MockMvc mockMvc;
-
-    @MockitoBean
-    private SayHelloService sayHelloService;
 
     @MockitoBean
     private GreetingRepository greetingRepository;
@@ -44,7 +37,7 @@ class HelloControllerTest
                 new GreetingRequest(requestId,idioma);
 
         // Configuramos el mock
-        when(greetingRepository.findById(requestId)).thenReturn(Optional.of(salida));
+        when(greetingRepository.findByIdempotencyKey(requestId)).thenReturn(Optional.of(salida));
 
         // JSON de entrada (lo que manda el cliente)
         String jsonEntrada = """
@@ -60,6 +53,6 @@ class HelloControllerTest
                         .content(jsonEntrada)
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().string("I greet you again"));
+                .andExpect(content().string("Hello World! Spring Boot \uD83C\uDF31\uD83D\uDE80"));
     }
 }

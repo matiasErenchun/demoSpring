@@ -1,6 +1,7 @@
 package com.example.demo.sayhello;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -11,17 +12,24 @@ import java.util.UUID;
 @Table(name ="greeting_request")
 public class GreetingRequest
 {
+    @Getter
     @Id
     @GeneratedValue
     private UUID id;
 
+    @Column(name = "idempotency_key", nullable = false, unique = true)
+    private UUID idempotencyKey;
+
+    @Getter
     @Column(nullable = false, length = 50)
     private String idioma;
 
+    @Getter
     @CreationTimestamp
     @Column(name = "fecha_creacion", updatable = false)
     private LocalDateTime fechaCreacion;
 
+    @Getter
     @UpdateTimestamp
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
@@ -29,23 +37,8 @@ public class GreetingRequest
     protected GreetingRequest() { }
 
     public GreetingRequest(UUID id,String idioma) {
-        this.id = id;
+        this.idempotencyKey = id;
         this.idioma = idioma;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public String getIdioma() {
-        return idioma;
-    }
-
-    public LocalDateTime getFechaCreacion() {
-        return fechaCreacion;
-    }
-
-    public LocalDateTime getFechaActualizacion() {
-        return fechaActualizacion;
-    }
 }

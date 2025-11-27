@@ -16,10 +16,12 @@ public class SayHelloServiceDefault  implements SayHelloService
 
     public String sayHello(UUID id, String idioma)
     {
-        Optional<GreetingRequest> existente = greetingRepository.findById(id);
+        Optional<GreetingRequest> existente = greetingRepository.findByIdempotencyKey(id);
         if (existente.isPresent()) {
             return "I greet you again";
         }
+        GreetingRequest entidad = new GreetingRequest(id, idioma);
+        greetingRepository.save(entidad);
         return "Hello World! Spring Boot \uD83C\uDF31\uD83D\uDE80";
     }
 }
