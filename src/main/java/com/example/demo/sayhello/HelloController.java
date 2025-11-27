@@ -1,6 +1,6 @@
 package com.example.demo.sayhello;
 
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -14,9 +14,10 @@ public class HelloController
         this.sayHelloService = sayHelloService;
     }
 
-    @GetMapping("/hello")
-    public String sayHello()
+    @PostMapping("/hello")
+    public String sayHello(SayHelloDto sayHelloDto)
     {
-        return sayHelloService.sayHello();
+        return sayHelloService.sayHello(sayHelloDto.id(), sayHelloDto.idioma());
     }
+
 }
